@@ -30,7 +30,8 @@ int rk4_move(CParticle& p, const float& dt, float *r, C3<float> *b0, int nR)
 
     //std::cout<<std::setprecision(21)<<"x: "<<p.c1<<" y: "<<p.c2<<" z: "<<p.c3
     //        <<" vx: "<<p.v_c1<<" vy: "<<p.v_c2<<" vz: "<<p.v_c3<<std::endl;
-
+    //printf("x: %e; y: %e; z: %e; vx: %e; vy: %e; vz: %e\n", p.c1, p.c2, p.c3, p.v_c1, p.v_c2, p.v_c3);
+    
     float t0 = 0;            
 
     C3<float> yn0(p.v_c1, p.v_c2, p.v_c3), xn0(p.c1, p.c2, p.c3);

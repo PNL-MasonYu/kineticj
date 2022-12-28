@@ -61,10 +61,10 @@ for test in tests:
 
     if not any(result):
         output = test.ljust(20)+ 'FAIL [' + '%.1f'%(endTime-startTime) + ' seconds]'
-        print output
+        print(output)
     else:
         output = test.ljust(20)+ 'PASS [' + '%.1f'%(endTime-startTime) + ' seconds]'
-        print output
+        print(output)
 
     os.chdir(cwd)
 

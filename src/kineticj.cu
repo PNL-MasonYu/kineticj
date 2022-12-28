@@ -464,47 +464,47 @@ int main(int argc, char** argv)
         // Move particle
         thrust::for_each( thrust::device, particleWorkList_device.begin(), particleWorkList_device.end(), 
                         moveParticle(dtMin, r_dPtr_raw, b0_dPtr_raw, r.size()) ); 
-        thrust::copy( thrust::device, particleWorkList_device.begin(),particleWorkList_device.end(),p_host.begin());
-
+        //thrust::copy( thrust::device, particleWorkList_device.begin(),particleWorkList_device.end(),p_host.begin());
+        
         // df0(v)/dv 
         thrust::transform( thrust::device, particleWorkList_device.begin(), particleWorkList_device.end(), df0_dv_XYZ_device.begin(), 
                         get_df0_dv() ); 
-        thrust::copy( thrust::device, df0_dv_XYZ_device.begin(),df0_dv_XYZ_device.end(),df0_dv_XYZ_host.begin());
-
+        //thrust::copy( thrust::device, df0_dv_XYZ_device.begin(),df0_dv_XYZ_device.end(),df0_dv_XYZ_host.begin());
+        
         // E1(x) 
         thrust::transform( thrust::device, particleWorkList_device.begin(), particleWorkList_device.end(), E1_device.begin(), 
                         getPerturbedField_device(r_dPtr_raw,e1_dPtr_raw,r.size(),nPhi,ky,kz,hanningWeight[i],wrf,thisT[i]) ); 
-        thrust::copy( thrust::device, E1_device.begin(),E1_device.end(),E1_host.begin());
-
+        //thrust::copy( thrust::device, E1_device.begin(),E1_device.end(),E1_host.begin());
+        
         // B1(x) 
         thrust::transform( thrust::device, particleWorkList_device.begin(), particleWorkList_device.end(), B1_device.begin(), 
                         getPerturbedField_device(r_dPtr_raw,b1_dPtr_raw,r.size(),nPhi,ky,kz,hanningWeight[i],wrf,thisT[i]) ); 
-        thrust::copy( thrust::device, B1_device.begin(),B1_device.end(),B1_host.begin());
+        //thrust::copy( thrust::device, B1_device.begin(),B1_device.end(),B1_host.begin());
 
         // v x B1 
         thrust::transform( thrust::device, particleWorkList_device.begin(), particleWorkList_device.end(), B1_device.begin(), vCrossB_device.begin(), 
                         vCross<thrust::complex<float> >() );
-        thrust::copy( thrust::device, vCrossB_device.begin(),vCrossB_device.end(),vCrossB_host.begin());
+        //thrust::copy( thrust::device, vCrossB_device.begin(),vCrossB_device.end(),vCrossB_host.begin());
 
         // E1 + v x B1
         thrust::transform( thrust::device, E1_device.begin(), E1_device.end(), vCrossB_device.begin(), vCrossB_E1_device.begin(), 
                         thrust::plus<C3<thrust::complex<float> > >() );
-        thrust::copy( thrust::device, vCrossB_E1_device.begin(),vCrossB_E1_device.end(),vCrossB_E1_host.begin());
+        //thrust::copy( thrust::device, vCrossB_E1_device.begin(),vCrossB_E1_device.end(),vCrossB_E1_host.begin());
 
         //  (E1 + v x B1) . grad_v(f0(v))
         thrust::transform( thrust::device, vCrossB_E1_device.begin(), vCrossB_E1_device.end(), df0_dv_XYZ_device.begin(), forceDotGradf0_device.begin(), 
                         doDotProduct_device() );
-        thrust::copy( thrust::device, forceDotGradf0_device.begin(),forceDotGradf0_device.end(),forceDotGradf0_host.begin());
+        //thrust::copy( thrust::device, forceDotGradf0_device.begin(),forceDotGradf0_device.end(),forceDotGradf0_host.begin());
 
         // int( (E1 + v x B1) . grad_v(f0(v)), dt ) via running dt integral
         thrust::transform( thrust::device, dtIntegral_device.begin(), dtIntegral_device.end(), forceDotGradf0_device.begin(), dtIntegral_device.begin(), 
                         runningIntegral<thrust::complex<float> >(dtIntFac) );
-        thrust::copy( thrust::device, dtIntegral_device.begin(),dtIntegral_device.end(),dtIntegral_host.begin());
+        //thrust::copy( thrust::device, dtIntegral_device.begin(),dtIntegral_device.end(),dtIntegral_host.begin());
 
         // f1(v) = -q/m * int( (E1 + v x B1) . grad_v(f0(v)), dt )
         thrust::transform( thrust::device, dtIntegral_device.begin(), dtIntegral_device.end(), particleWorkList_device.begin(), f1_device.begin(), 
                         multiplyByChargeOverMass<thrust::complex<float> >() ); 
-        thrust::copy( thrust::device, f1_device.begin(),f1_device.end(),f1_host.begin());
+        //thrust::copy( thrust::device, f1_device.begin(),f1_device.end(),f1_host.begin());
 
         // q . f1(v) // first step in velocity momemnt for current calculation 
         thrust::transform( thrust::device, f1_device.begin(), f1_device.end(), particleWorkList_device.begin(), f1_device.begin(), 
@@ -512,17 +512,17 @@ int main(int argc, char** argv)
         // q . vx . f1(v) 
         thrust::transform( thrust::device, f1_device.begin(), f1_device.end(), vx_device.begin(), vxf1_device.begin(), 
                         thrust::multiplies<thrust::complex<float> >() ); 
-        thrust::copy( thrust::device, vxf1_device.begin(),vxf1_device.end(),vxf1_host.begin());
+        //thrust::copy( thrust::device, vxf1_device.begin(),vxf1_device.end(),vxf1_host.begin());
 
         // q . vy . f1(v) 
         thrust::transform( thrust::device, f1_device.begin(), f1_device.end(), vy_device.begin(), vyf1_device.begin(), 
                         thrust::multiplies<thrust::complex<float> >() ); 
-        thrust::copy( thrust::device, vyf1_device.begin(),vyf1_device.end(),vyf1_host.begin());
+        //thrust::copy( thrust::device, vyf1_device.begin(),vyf1_device.end(),vyf1_host.begin());
 
         // q . vz . f1(v) 
         thrust::transform( thrust::device, f1_device.begin(), f1_device.end(), vz_device.begin(), vzf1_device.begin(), 
                         thrust::multiplies<thrust::complex<float> >() ); 
-        thrust::copy( thrust::device, vzf1_device.begin(),vzf1_device.end(),vzf1_host.begin());
+        //thrust::copy( thrust::device, vzf1_device.begin(),vzf1_device.end(),vzf1_host.begin());
 
 #endif 
 

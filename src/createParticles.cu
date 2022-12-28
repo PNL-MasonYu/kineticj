@@ -44,7 +44,7 @@ C3<float> maxwellian_df0_dv(const C3<float> _v, const float _T_keV, const float 
 {
 
     C3<float> df0_dv;
-
+    
     float vTh = get_vTh(_amu, _Z, _T_keV);
 
     float _vx = _v.c1;
@@ -77,7 +77,7 @@ C3<float> maxwellian_df0_dv(const C3<float> _v, const float _T_keV, const float 
     _df0_dv = (-fL + fR) / (2 * h);
 
     df0_dv.c3 = _df0_dv * _n_m3;
-
+    //printf("df0_dv = %e; %e; %e\n", df0_dv.c1, df0_dv.c2, df0_dv.c3);
     return df0_dv;
 }
 

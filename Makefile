@@ -6,8 +6,8 @@ CPPFLAGS :=
 # Select only one.
 
 USE_SERIAL:= 0
-USE_CUDA  := 0
-USE_OPENMP:= 1
+USE_CUDA  := 1
+USE_OPENMP:= 0
 
 NAME := bin/kineticj
 
@@ -45,7 +45,7 @@ endif
 
 ifeq ($(USE_CUDA),1)
 THRUST_POLICY:=THRUST_DEVICE_SYSTEM_CUDA
-NVCC := nvcc -O3 -DTHRUST_DEVICE_SYSTEM=${THRUST_POLICY} 
+NVCC := nvcc -O3 -DTHRUST_DEVICE_SYSTEM=${THRUST_POLICY} --gpu-code=sm_86 --gpu-architecture=compute_86
 NVCCFLAGS:= -dc --expt-relaxed-constexpr -Xcompiler 
 endif
 
@@ -86,14 +86,14 @@ CPPFLAGS += -DDEBUG_MAXWELLIAN=0
 CPPFLAGS += -DDEBUG_FORCE_TERM=0
 CPPFLAGS += -DDEBUG_MOVE=0
 CPPFLAGS += -DDEBUG_ROTATION=0
-CPPFLAGS += -std=c++11
+CPPFLAGS += -std=c++14
 CPPFLAGS += -DDO_CPU_ITERATOR_APPROACH=0
 CPPFLAGS += -DDO_CPU_APPROACH=0
 CPPFLAGS += -DLOWMEM_ORBIT_WRITE=0
 CPPFLAGS += -DF1_WRITE=0
 CPPFLAGS += -DDEBUG_INTVECARRAY=0
 CPPFLAGS += -DDEBUG_READ_E_FIELD=0
-CPPFLAGS += -DCYLINDRICAL_INPUT_FIELDS=0
+CPPFLAGS += -DCYLINDRICAL_INPUT_FIELDS=1
 
 
 # You shouldn't have to go below here
@@ -166,5 +166,5 @@ clean:
 test:
 	@cd tests; \
 	./clean.sh; \
-	python2 ../python/kj_test.py; \
+	python3 ../python/kj_test.py; \
 	cd ../; 

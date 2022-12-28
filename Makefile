@@ -45,7 +45,7 @@ endif
 
 ifeq ($(USE_CUDA),1)
 THRUST_POLICY:=THRUST_DEVICE_SYSTEM_CUDA
-NVCC := nvcc -O3 -DTHRUST_DEVICE_SYSTEM=${THRUST_POLICY} --gpu-code=sm_86 --gpu-architecture=compute_86
+NVCC := nvcc -O3 -DTHRUST_DEVICE_SYSTEM=${THRUST_POLICY}
 NVCCFLAGS:= -dc --expt-relaxed-constexpr -Xcompiler 
 endif
 

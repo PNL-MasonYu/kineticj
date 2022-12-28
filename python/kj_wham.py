@@ -149,7 +149,7 @@ class KineticJ_result:
         plt.tight_layout()
         plt.show()
 
-    def write_to_file(self, file_dir="/mnt/d/WHAM_KJ_data/COMSOL_input", iter=0):
+    def write_to_file(self, file_dir="/mnt/e/WHAM_KJ_data/COMSOL_input", iter=0):
          # Output to COMSOL inputs file
          # It overwrites any outputs from a different simulation, but probably fine because the data is all in the KJ run directories
         z_coords, r_coords = np.linspace(-1, 1, 4000), np.linspace(0, 0.15, 300)
@@ -173,7 +173,7 @@ def make_run_directory(run_dir, nr:int, n_z, comsol:COMSOL_data):
     os.mkdir(nr_rundir)
     os.mkdir(nr_rundir + "/input")
     os.mkdir(nr_rundir + "/output")
-    shutil.copy("/home/mason/kineticj/WHAM/kj.cfg", nr_rundir + "/kj.cfg")
+    shutil.copy("/home/mason/WHAM/kineticj/WHAM/kj.cfg", nr_rundir + "/kj.cfg")
     """
     with io.open(nr_dir + str(nr) + "/kj.cfg") as f:
         config = libconf.load(f)
@@ -276,7 +276,7 @@ def run_kineticj(run_dir):
     #os.chdir(cwd)
     return
 
-def run_comsol(mph_dir="/mnt/c/users/stone/OneDrive - UW-Madison/WHAM COMSOL"):
+def run_comsol(mph_dir="/mnt/c/users/MasonYu/OneDrive - UW-Madison/WHAM COMSOL"):
     startTime = time.time()
     os.chdir(mph_dir)
     print("starting COMSOL run")
@@ -289,11 +289,11 @@ def run_comsol(mph_dir="/mnt/c/users/stone/OneDrive - UW-Madison/WHAM COMSOL"):
 
 def run_iterations(iter_start_n:int, n_iter:int, r_n:list, restart=True):
     for n in range(iter_start_n, iter_start_n+n_iter):
-        run_dir = "/home/mason/kineticj/WHAM/CQL_ne/iter_" + str(n)
+        run_dir = "/home/mason/WHAM/kineticj/WHAM/CQL_ne/iter_" + str(n)
         if not os.path.exists(run_dir):
             os.mkdir(run_dir)
         # Directory containing the COMSOL electric field output files from last iteration
-        comsol_output_dir = "/mnt/d/WHAM_KJ_data/CQL_ne/iter_" + str(n)
+        comsol_output_dir = "/mnt/e/WHAM_KJ_data/CQL_ne/iter_" + str(n)
         # First run kineticJ with existing COMSOL data, if iter_start_n = 0, this should be prepared
         comsol = COMSOL_data(comsol_output_dir)
         for run_n in r_n:
@@ -307,9 +307,9 @@ def run_iterations(iter_start_n:int, n_iter:int, r_n:list, restart=True):
         iter_kj.plot()
         iter_kj.write_to_file(iter=n)
         run_comsol()
-        source_dir = "/mnt/d/WHAM_KJ_data/"
+        source_dir = "/mnt/e/WHAM_KJ_data/"
         # Directory containing the COMSOL electric field output files for new iteration
-        comsol_output_dir = "/mnt/d/WHAM_KJ_data/CQL_ne/iter_" + str(n+1)
+        comsol_output_dir = "/mnt/e/WHAM_KJ_data/CQL_ne/iter_" + str(n+1)
         if not os.path.exists(comsol_output_dir):
             os.mkdir(comsol_output_dir)
         for file_name in os.listdir(source_dir):
@@ -320,9 +320,9 @@ def run_iterations(iter_start_n:int, n_iter:int, r_n:list, restart=True):
         print("finished copying files for iter_" + str(n))
     return
 
-#run_iterations(3, 4, r_n)
+run_iterations(0, 4, r_n)
 
-iter_data = COMSOL_data("/mnt/d/WHAM_KJ_data/CQL_ne/iter_2")
-iter_data.plot_comsol_field(iter_data.Ephi_real)
-#read_input_nc("/home/mason/kineticj/WHAM/high_collision_gpu/iter_0/r_0/input/input-data.nc")
+#iter_data = COMSOL_data("/mnt/e/WHAM_KJ_data/CQL_ne/iter_2")
+#iter_data.plot_comsol_field(iter_data.Ephi_real)
+#read_input_nc("/home/mason/WHAM/kineticj/WHAM/high_collision_gpu/iter_0/r_0/input/input-data.nc")
 # %%

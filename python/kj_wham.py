@@ -83,6 +83,25 @@ class COMSOL_data:
             plt.show(fig)
         return
 
+    def export_to_dispersionnering(self, Te=600, r=0):
+        """
+        Export data to dispersionnering inputs in columns of R(m), Z(m), Psi(normalized to 1 at LCFS), ne (m^-3), Te (eV) and Bz(T)
+        """
+        npt = len(self.r_coords)
+        print(npt)
+        data = np.zeros((npt, 6))
+        for n in range(npt):
+            data[n, 0] = r
+            z = self.z_coords[n]
+            data[n, 1] = z
+            data[n, 2] = r
+            data[n, 3] = self.ne[r, n]
+            data[n, 4] = Te
+            data[n, 5] = self.Bz[r, n]
+        np.savetxt("./WHAM_profiles_1Daxial_COMSOL.csv", data, "%.5f", delimiter=",", header="R(m), Z(m), Psi(normalized to 1 at LCFS), ne (m^-3), Te (eV), Bz(T)")
+        return
+
+
 class KineticJ_result:
 
     def __init__(self, run_dir):
@@ -285,7 +304,7 @@ def run_comsol(mph_dir="/mnt/c/users/MasonYu/OneDrive - UW-Madison/WHAM COMSOL")
     os.chdir(mph_dir)
     print("starting COMSOL run")
     cmd = "comsol batch"
-    args = " -inputfile WHAM_RF_KJ.mph -methodcall run_kj_wsl_t2000"
+    args = " -inputfile WHAM_RF_KJ.mph -methodcall run_kj_wsl_t2000 -nosave"
     call(cmd + args, shell=True)
     endTime = time.time()
     print('COMSOL took: %.5f'%(endTime-startTime) + ' seconds')
@@ -312,22 +331,23 @@ def run_iterations(iter_start_n:int, n_iter:int, r_n:list, restart=True):
         iter_kj.plot()
         iter_kj.write_to_file(iter=n)
         run_comsol()
-        source_dir = KJDATAPATH
+        source_dir = KJDATAPATH + "/"
         # Directory containing the COMSOL electric field output files for new iteration
-        comsol_output_dir = KJDATAPATH + "/1e20ne_30e6f/iter_" + str(n+1)
-        if not os.path.exists(comsol_output_dir):
-            os.mkdir(comsol_output_dir)
+        comsol_next_dir = KJDATAPATH + "/1e20ne_30e6f/iter_" + str(n+1)
+        if not os.path.exists(comsol_next_dir):
+            os.mkdir(comsol_next_dir)
         for file_name in os.listdir(source_dir):
             source = source_dir + file_name
-            destination = comsol_output_dir + "/" + file_name
+            destination = comsol_next_dir + "/" + file_name
             if os.path.isfile(source):
                 shutil.copy(source, destination)
-        print("finished copying files for iter_" + str(n))
+        print("finished copying files to " + comsol_next_dir)
     return
 
-run_iterations(0, 4, r_n)
+#run_iterations(1, 15, r_n, True)
 
-#iter_data = COMSOL_data(KJDATAPATH + "/1e20ne_30e6f/iter_2")
-#iter_data.plot_comsol_field(["Ephi_real"])
+iter_data = COMSOL_data(KJDATAPATH + "/1e20ne_30e6f/iter_2")
+#iter_data.plot_comsol_field(["Er_real"])
+iter_data.export_to_dispersionnering(600, 0)
 #read_input_nc("/home/mason/WHAM/kineticj/WHAM/high_collision_gpu/iter_0/r_0/input/input-data.nc")
 # %%

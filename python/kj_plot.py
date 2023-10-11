@@ -3,7 +3,7 @@ from netCDF4 import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
 
-ncIn = Dataset('/home/mason/kineticj/WHAM/high_collision_gpu/iter_7/r_10/input/input-data.nc')
+ncIn = Dataset('/home/mason/WHAM/kineticj/WHAM/1e20ne_30e6f/iter_1/r_5/input/input-data.nc')
 
 e = 1.60217662e-19
 q = 1.0*e 
@@ -17,7 +17,7 @@ bzIn = ncIn.variables['B0_z'][:]
 erReIn = ncIn.variables['e_r_re'][:]
 erImIn = ncIn.variables['e_r_im'][:]
 f = ncIn.variables['freq'][0]
-
+f= 10e6
 B = np.sqrt(np.power(brIn,2)+np.power(btIn,2)+np.power(bzIn,2))
 wc = q*B/m
 w = 2*np.pi*f
@@ -29,10 +29,9 @@ vth = np.sqrt(2*T_eV*e/m)
 v_perp = vth/np.sqrt(2)
 rho_larmor = m*v_perp/(q*B) * 2e3
 
-nc = Dataset('/home/mason/kineticj/WHAM/high_collision_gpu/iter_7/r_10/output/jP2.nc')
+nc = Dataset('/home/mason/WHAM/kineticj/WHAM/1e20ne_30e6f/iter_1/r_5/output/jP2.nc')
 
 x = nc.variables['x'][:]
-
 
 jx_re = nc.variables['j1xc_re'][:]
 jx_im = nc.variables['j1xc_im'][:]
@@ -80,12 +79,14 @@ ax3.semilogy(xIn,1/np.abs(res))
 res = w-kPar*vth-4*wc
 ax3.semilogy(xIn,1/np.abs(res))
 ax3.set_xlim(xRng)
-ax3.set_title('1/(|w-vth*kpar-n*wc|) for n=1-4 at freq %.2e'%(f))
+ax3.set_xlabel("x (m)")
+ax3.set_title('1/(|w-n*wc|) for n=1-4 at freq %.2e'%(f))
 
 ax4.plot(xIn,B, label="B (T)")
 ax4.plot(xIn,rho_larmor, label='gyrodiameter (mm)')
 ax4.set_xlim(xRng)
 ax4.legend(loc="upper right")
+ax4.set_xlabel("x (m)")
 ax4.set_title('B (T) and gyrodiameter')
 
 ax5.plot(x,jr_re, label="real")

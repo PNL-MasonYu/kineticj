@@ -86,6 +86,7 @@ int main(int argc, char** argv)
         cudaDeviceProp dprop;
         cudaGetDeviceProperties(&dprop, i);
         printf("   %d: %s\n", i, dprop.name);
+        cudaSetDevice(i);
     }
 #endif
 #endif

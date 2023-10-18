@@ -57,14 +57,24 @@ for test in tests:
     result.append( np.allclose(j1zre1,j1zre2,rtol=rtol) )
     result.append( np.allclose(j1zim1,j1zim2,rtol=rtol) )
 
+    difference = []
+
+    difference.append(np.subtract(j1xre1,j1xre2))
+    difference.append(np.subtract(j1xim1,j1xim2))
+    difference.append(np.subtract(j1yre1,j1yre2))
+    difference.append(np.subtract(j1yim1,j1yim2))
+    difference.append(np.subtract(j1zre1,j1zre2))
+    difference.append(np.subtract(j1zim1,j1zim2))
     endTime = time.time()
 
     if not any(result):
         output = test.ljust(20)+ 'FAIL [' + '%.1f'%(endTime-startTime) + ' seconds]'
         print(output)
+        print(difference)
     else:
         output = test.ljust(20)+ 'PASS [' + '%.1f'%(endTime-startTime) + ' seconds]'
         print(output)
+        print(max(difference))
 
     os.chdir(cwd)
 
